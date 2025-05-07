@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
-use super::{Coercion, NormalizedString, AssetReference};
+use super::{Coercion, NormalizedString};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Type)]
 pub struct BuildingFuelType {

@@ -212,7 +212,7 @@ impl AsRef<str> for ClassReference {
     }
 }
 
-pub(crate) fn parse_docs_json(docs_folder: PathBuf, locale: String) -> crate::Result<Value> {
+pub fn parse_docs_json(docs_folder: PathBuf, locale: String) -> crate::Result<Value> {
     let combined_path = docs_folder.join(locale.clone() + ".json");
     if !combined_path.exists() {
         return Err(DocsError::unknown_locale(locale).into());
@@ -251,7 +251,8 @@ pub(crate) fn parse_docs_json(docs_folder: PathBuf, locale: String) -> crate::Re
 #[derive(Serialize, Clone, Debug, PartialEq, Type)]
 pub struct AssetReference {
     pub asset_type: String,
-    pub asset_path: String
+    pub asset_path: String,
+    pub asset_id: Option<String>
 }
 
 impl<'de> Deserialize<'de> for AssetReference {
@@ -260,10 +261,25 @@ impl<'de> Deserialize<'de> for AssetReference {
         D: serde::Deserializer<'de>,
     {
         let raw = String::deserialize(deserializer)?;
-        if let Some((kind, path)) = raw.split_once(' ') {
-            Ok(Self {asset_type: kind.to_string(), asset_path: path.to_string()})
+
+        let asset_id = if !raw.contains("/") && raw.ends_with("256") {
+            Some(raw.clone())
         } else {
-            Ok(Self {asset_type: String::from("UNKNOWN"), asset_path: raw})
+            if let Some((_, name)) = raw.trim_end_matches("_").rsplit_once(".") {
+                if let Some((unsize, _)) = name.trim_end_matches("_").rsplit_once("_") {
+                    Some(format!("{unsize}_256"))
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        };
+
+        if let Some((kind, path)) = raw.split_once(' ') {
+            Ok(Self {asset_type: kind.to_string(), asset_path: path.to_string(), asset_id})
+        } else {
+            Ok(Self {asset_type: String::from("UNKNOWN"), asset_path: raw, asset_id})
         }
     }
 }

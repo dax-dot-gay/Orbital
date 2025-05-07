@@ -18,7 +18,7 @@ pub use recipe::RecipeItem;
 pub use research::{ResearchItem, ResearchType};
 use serde::{Deserialize, Serialize};
 use specta::Type;
-pub use utility::{ClassReference, Coercion, IconPath, NormalizedString};
+pub use utility::{ClassReference, Coercion, IconPath, NormalizedString, AssetReference};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct SatinData {

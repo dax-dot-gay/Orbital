@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
-use super::{Coercion, IconPath, NormalizedString};
+use super::{Coercion, NormalizedString, AssetReference};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
@@ -115,7 +115,11 @@ pub struct DescriptionItem {
 
     #[serde(alias = "mSmallIcon")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub icon: Option<IconPath>,
+    pub icon: Option<AssetReference>,
+
+    #[serde(alias = "mPersistentBigIcon")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub big_icon: Option<AssetReference>,
 
     #[serde(alias = "mEquipmentSlot")]
     #[serde(skip_serializing_if = "Option::is_none")]

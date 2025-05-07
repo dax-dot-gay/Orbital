@@ -247,3 +247,23 @@ pub(crate) fn parse_docs_json(docs_folder: PathBuf, locale: String) -> crate::Re
     serde_json::from_str::<Value>(&decoded.strip_bom())
         .or_else(|e| Err(DocsError::invalid_format(format!("Bad JSON data: {:?}", e)).into()))
 }
+
+#[derive(Serialize, Clone, Debug, PartialEq, Type)]
+pub struct AssetReference {
+    pub asset_type: String,
+    pub asset_path: String
+}
+
+impl<'de> Deserialize<'de> for AssetReference {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let raw = String::deserialize(deserializer)?;
+        if let Some((kind, path)) = raw.split_once(' ') {
+            Ok(Self {asset_type: kind.to_string(), asset_path: path.to_string()})
+        } else {
+            Ok(Self {asset_type: String::from("UNKNOWN"), asset_path: raw})
+        }
+    }
+}

@@ -18,3 +18,5 @@ target/
 
 tests.toml
 test.output.json
+workdir
+extracted

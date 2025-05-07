@@ -29,9 +29,18 @@ pub(crate) struct TestConfigurationSteam {
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]
+pub(crate) struct TestConfigurationDocs {
+    #[serde(default)]
+    pub locale: String
+}
+
+#[derive(Deserialize, Debug, Clone, Default)]
 pub(crate) struct TestConfiguration {
     #[serde(default)]
     pub steam: TestConfigurationSteam,
+
+    #[serde(default)]
+    pub docs: TestConfigurationDocs
 }
 
 impl TestConfiguration {

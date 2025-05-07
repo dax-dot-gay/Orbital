@@ -31,7 +31,10 @@ pub(crate) struct TestConfigurationSteam {
 #[derive(Deserialize, Debug, Clone, Default)]
 pub(crate) struct TestConfigurationDocs {
     #[serde(default)]
-    pub locale: String
+    pub locale: String,
+
+    #[serde(default)]
+    pub output: String
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]

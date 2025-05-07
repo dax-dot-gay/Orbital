@@ -62,7 +62,7 @@ impl SatinData {
 
 #[cfg(test)]
 mod tests {
-    use std::{fs, io::Write};
+    use std::{fs, io::Write, path::Path};
 
     use serde_json::to_string_pretty;
 
@@ -86,7 +86,7 @@ mod tests {
         let result = utility::parse_docs_json(library.docs(), config.docs.locale)?;
         let mut generator = Generator::new(result);
         let generated = generator.generate();
-        let mut f = fs::File::create("out.json").unwrap();
+        let mut f = fs::File::create(Path::new(env!("CARGO_MANIFEST_DIR")).join(config.docs.output)).unwrap();
         f.write_all(to_string_pretty(&generated).unwrap().as_bytes())
             .unwrap();
 

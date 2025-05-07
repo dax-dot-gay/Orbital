@@ -1,1 +1,1 @@
-pub mod sf_docs;
+pub mod satisfactory;

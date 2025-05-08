@@ -4,6 +4,7 @@ use std::{
     fs,
     io::Write,
     path::{Path, PathBuf},
+    process::Command,
 };
 
 use clap::Parser;
@@ -17,6 +18,8 @@ use tempfile::tempdir;
 
 mod cli;
 
+include!(concat!(env!("OUT_DIR"), "/binaries.rs"));
+
 fn generate_asset_request(generated: Generated, workdir: PathBuf) -> Result<(), Box<dyn Error>> {
     let mut requests: HashMap<String, String> = HashMap::new();
     for (_, desc) in generated.descriptions {
@@ -28,7 +31,17 @@ fn generate_asset_request(generated: Generated, workdir: PathBuf) -> Result<(), 
             }) = item
             {
                 if !requests.contains_key(&id) && asset_type == String::from("Texture2D") {
-                    requests.insert(id, format!("TEXTURE::{asset_path}"));
+                    requests.insert(
+                        id,
+                        format!(
+                            "TEXTURE::/FactoryGame/Content/{}",
+                            asset_path
+                                .trim_start_matches('/')
+                                .split_once('/')
+                                .unwrap()
+                                .1
+                        ),
+                    );
                 }
             }
         }
@@ -68,7 +81,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     let generated = Generator::new(parsed).generate();
 
     fs::write(workdir.join("docs.json"), to_string_pretty(&generated)?)?;
-    generate_asset_request(generated.clone(), workdir)?;
+    generate_asset_request(generated.clone(), workdir.clone())?;
+
+    let ((exe_filename, exe_content), (lib_filename, lib_content)) = binaries();
+    fs::write(workdir.join(exe_filename), exe_content)?;
+    fs::write(workdir.join(lib_filename), lib_content)?;
+
+    let child = Command::new(exe_filename)
+        .arg(steam.paks().to_str().unwrap())
+        .arg(steam.community_resources().to_str().unwrap())
+        .arg(workdir.join("asset_req.txt").to_str().unwrap())
+        .arg(workdir.to_str().unwrap())
+        .arg(workdir.join(lib_filename).to_str().unwrap())
+        .current_dir(workdir.clone())
+        .spawn()?;
+
+    child.
 
     Ok(())
 }

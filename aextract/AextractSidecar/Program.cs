@@ -1,4 +1,5 @@
-﻿using CUE4Parse.FileProvider;
+﻿using CUE4Parse.Compression;
+using CUE4Parse.FileProvider;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
@@ -12,6 +13,9 @@ static class AExtract
         string CommunityDirectory = args[1];
         string Requests = args[2];
         string TargetDirectory = args[3];
+        string OodleLib = args[4];
+
+        OodleHelper.Initialize(OodleLib);
 
         using StreamReader r = new(Path.Join(CommunityDirectory, "CustomVersions.json"));
         string json = r.ReadToEnd();
@@ -34,9 +38,26 @@ static class AExtract
             ),
         };
         provider.Initialize();
-        foreach (var f in provider.Files)
-        {
-            Console.WriteLine(f.Key);
-        }
+        provider.Mount();
+        provider.PostMount();
+
+        using StreamReader reqs = new(Requests);
+        Parallel.ForEach(
+            reqs.ReadToEnd().Split("\n"),
+            line =>
+            {
+                var ltrimmed = line.Trim();
+                var parts = ltrimmed.Split("::", count: 3);
+                var TargetId = parts[0];
+                var TargetType = parts[1];
+                var TargetPath = parts[2];
+
+                Console.WriteLine($"Exporting {TargetId} ({TargetType}): {TargetPath}");
+                if (!provider.TryLoadPackageObject(TargetPath, out var obj))
+                    return;
+
+                Console.WriteLine(obj.ExportType);
+            }
+        );
     }
 }

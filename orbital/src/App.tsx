@@ -1,51 +1,44 @@
+import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import { ThemeContext, ThemeMode } from "./utils/theme/themeContext";
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+import "./styles/index.scss";
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+// DARK THEME
+import { shadcnCssVariableResolver as darkVariableResolver } from "./utils/theme/dark/cssVariableResolver";
+import { shadcnTheme as darkTheme } from "./utils/theme/dark/theme";
 
-  return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+// LIGHT THEME
+import { shadcnCssVariableResolver as lightVariableResolver } from "./utils/theme/light/cssVariableResolver";
+import { shadcnTheme as lightTheme } from "./utils/theme/light/theme";
 
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+import "./utils/theme/style.css";
+import { Routing } from "./views/routes";
+import { LocalizationProvider } from "./utils/Localization";
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
-  );
+export function App() {
+    const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
+
+    return (
+        <ThemeContext.Provider value={[themeMode, setThemeMode]}>
+            <LocalizationProvider>
+                <MantineProvider
+                    forceColorScheme={themeMode}
+                    theme={themeMode === "dark" ? darkTheme : lightTheme}
+                    cssVariablesResolver={
+                        themeMode === "dark"
+                            ? darkVariableResolver
+                            : lightVariableResolver
+                    }
+                >
+                    <ModalsProvider>
+                        <Notifications />
+                        <Routing />
+                    </ModalsProvider>
+                </MantineProvider>
+            </LocalizationProvider>
+        </ThemeContext.Provider>
+    );
 }
-
-export default App;

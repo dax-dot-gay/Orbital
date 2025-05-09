@@ -1,26 +1,27 @@
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+use orbital_common::types::satisfactory::OrbitalData;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    #[cfg(debug_assertions)] // only enable instrumentation in development builds
-    let devtools = tauri_plugin_devtools::init();
+    #[allow(unused_mut)]
+    let mut specta_builder = tauri_specta::Builder::<tauri::Wry>::new()
+        .typ::<OrbitalData>();
 
-    let mut builder = tauri::Builder::default()
+    #[cfg(debug_assertions)] // <- Only export on non-release builds
+    specta_builder
+        .export(specta_typescript::Typescript::default(), "../src/bindings.ts")
+        .expect("Failed to export typescript bindings");
+
+    let builder = tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_persisted_scope::init())
         .plugin(tauri_plugin_log::Builder::new().build())
-        .plugin(tauri_plugin_persistence::init());
-    builder = builder
-        .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet]);
-
-    #[cfg(debug_assertions)]
-    {
-        builder = builder.plugin(devtools);
-    }
+        .plugin(tauri_plugin_persistence::init())
+        .invoke_handler(tauri::generate_handler![])
+        .setup(move |app| {
+            specta_builder.mount_events(app);
+            Ok(())
+        });
 
     builder
         .run(tauri::generate_context!())

@@ -7,8 +7,9 @@
   ],
   "permissions": [
     "core:default",
-    "opener:default",
     "persistence:default",
-    "log:default"
+    "log:default",
+    "fs:default",
+    "dialog:default"
   ]
 }

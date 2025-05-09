@@ -1,7 +1,12 @@
-use std::{
-    collections::HashMap, error::Error, fs, io::{BufRead, BufReader, Write}, os::unix::fs::PermissionsExt, path::{Path, PathBuf}
-};
 use duct::cmd;
+use std::{
+    collections::HashMap,
+    error::Error,
+    fs,
+    io::{BufRead, BufReader, Write},
+    os::unix::fs::PermissionsExt,
+    path::{Path, PathBuf},
+};
 
 use clap::Parser;
 use cli::Cli;
@@ -42,6 +47,11 @@ fn generate_asset_request(generated: Generated, workdir: PathBuf) -> Result<(), 
             }
         }
     }
+
+    requests.insert(String::from("MapSlice0_0"), String::from("TEXTURE::/FactoryGame/Content/FactoryGame/Interface/UI/Assets/MapTest/SlicedMap/Map_0-0.Map_0-0"));
+    requests.insert(String::from("MapSlice1_0"), String::from("TEXTURE::/FactoryGame/Content/FactoryGame/Interface/UI/Assets/MapTest/SlicedMap/Map_1-0.Map_1-0"));
+    requests.insert(String::from("MapSlice0_1"), String::from("TEXTURE::/FactoryGame/Content/FactoryGame/Interface/UI/Assets/MapTest/SlicedMap/Map_0-1.Map_0-1"));
+    requests.insert(String::from("MapSlice1_1"), String::from("TEXTURE::/FactoryGame/Content/FactoryGame/Interface/UI/Assets/MapTest/SlicedMap/Map_1-1.Map_1-1"));
 
     let mut file = fs::File::create(workdir.join("asset_req.txt"))?;
     for (id, tail) in requests {
@@ -93,21 +103,25 @@ fn main() -> Result<(), Box<dyn Error>> {
         lib_perms.set_mode(0o777);
         fs::set_permissions(workdir.join(lib_filename.clone()), lib_perms)?;
     }
-    
 
     let _paks = steam.paks();
     let _comr = steam.community_resources();
 
-    let sc_args = vec![_paks.to_str().unwrap(), _comr.to_str().unwrap(), "asset_req.txt", lib_filename.as_str()];
+    let sc_args = vec![
+        _paks.to_str().unwrap(),
+        _comr.to_str().unwrap(),
+        "asset_req.txt",
+        lib_filename.as_str(),
+    ];
     let sidecar = cmd(exe_filename, &sc_args);
     let reader = sidecar.dir(workdir.clone()).stderr_to_stdout().reader()?;
     let lines = BufReader::new(reader).lines();
-    
+
     for line in lines {
         match line {
             Ok(val) => {
                 println!("SIDECAR: {}", val);
-            },
+            }
             Err(e) => {
                 println!("SIDECAR FAILED: {e:?}");
                 break;

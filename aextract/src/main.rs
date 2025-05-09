@@ -1,11 +1,7 @@
 use std::{
-    collections::HashMap,
-    error::Error,
-    fs,
-    io::Write,
-    path::{Path, PathBuf},
-    process::Command,
+    collections::HashMap, error::Error, fs, io::{BufRead, BufReader, Write}, os::unix::fs::PermissionsExt, path::{Path, PathBuf}
 };
+use duct::cmd;
 
 use clap::Parser;
 use cli::Cli;
@@ -84,19 +80,40 @@ fn main() -> Result<(), Box<dyn Error>> {
     generate_asset_request(generated.clone(), workdir.clone())?;
 
     let ((exe_filename, exe_content), (lib_filename, lib_content)) = binaries();
-    fs::write(workdir.join(exe_filename), exe_content)?;
-    fs::write(workdir.join(lib_filename), lib_content)?;
+    fs::write(workdir.join(exe_filename.clone()), exe_content)?;
+    fs::write(workdir.join(lib_filename.clone()), lib_content)?;
 
-    let child = Command::new(exe_filename)
-        .arg(steam.paks().to_str().unwrap())
-        .arg(steam.community_resources().to_str().unwrap())
-        .arg(workdir.join("asset_req.txt").to_str().unwrap())
-        .arg(workdir.to_str().unwrap())
-        .arg(workdir.join(lib_filename).to_str().unwrap())
-        .current_dir(workdir.clone())
-        .spawn()?;
+    #[cfg(unix)]
+    {
+        let mut exe_perms = fs::metadata(workdir.join(exe_filename.clone()))?.permissions();
+        exe_perms.set_mode(0o777);
+        fs::set_permissions(workdir.join(exe_filename.clone()), exe_perms)?;
 
-    child.
+        let mut lib_perms = fs::metadata(workdir.join(lib_filename.clone()))?.permissions();
+        lib_perms.set_mode(0o777);
+        fs::set_permissions(workdir.join(lib_filename.clone()), lib_perms)?;
+    }
+    
+
+    let _paks = steam.paks();
+    let _comr = steam.community_resources();
+
+    let sc_args = vec![_paks.to_str().unwrap(), _comr.to_str().unwrap(), "asset_req.txt", lib_filename.as_str()];
+    let sidecar = cmd(exe_filename, &sc_args);
+    let reader = sidecar.dir(workdir.clone()).stderr_to_stdout().reader()?;
+    let lines = BufReader::new(reader).lines();
+    
+    for line in lines {
+        match line {
+            Ok(val) => {
+                println!("SIDECAR: {}", val);
+            },
+            Err(e) => {
+                println!("SIDECAR FAILED: {e:?}");
+                break;
+            }
+        };
+    }
 
     Ok(())
 }

@@ -17,6 +17,7 @@ pub fn run() {
         .plugin(tauri_plugin_persisted_scope::init())
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_persistence::init())
+        .plugin(tauri_plugin_zustand::init())
         .invoke_handler(tauri::generate_handler![])
         .setup(move |app| {
             specta_builder.mount_events(app);

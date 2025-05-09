@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[derive(Error, Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
 pub enum DocsError {
     #[error("Unknown locale: {locale}")]
     UnknownLocale { locale: String },
@@ -40,6 +41,7 @@ impl DocsError {
 }
 
 #[derive(Error, Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Error {
     #[error(transparent)]
     Docs { error: DocsError },

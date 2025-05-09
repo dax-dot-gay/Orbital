@@ -1,11 +1,8 @@
 use duct::cmd;
+use walkdir::WalkDir;
+use zip::{write::SimpleFileOptions, ZipWriter};
 use std::{
-    collections::HashMap,
-    error::Error,
-    fs,
-    io::{BufRead, BufReader, Write},
-    os::unix::fs::PermissionsExt,
-    path::{Path, PathBuf},
+    collections::HashMap, env::set_current_dir, error::Error, fs, io::{BufRead, BufReader, Read, Write}, os::unix::fs::PermissionsExt, path::{Path, PathBuf}
 };
 
 use clap::Parser;
@@ -78,7 +75,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .output
         .unwrap_or(Path::new("./extracted").to_path_buf());
     if !output_path.exists() {
-        fs::create_dir_all(output_path).expect("Failed to create output directory");
+        fs::create_dir_all(output_path.clone()).expect("Failed to create output directory");
     }
 
     let steam = SteamLibrary::new(options.steam_library.as_path());
@@ -127,6 +124,42 @@ fn main() -> Result<(), Box<dyn Error>> {
                 break;
             }
         };
+    }
+
+    fs::create_dir_all(workdir.join("staging").join("map"))?;
+    fs::create_dir_all(workdir.join("staging").join("icons"))?;
+    fs::rename(workdir.join("docs.json"), workdir.join("staging").join("docs.json"))?;
+
+    for fp in glob::glob(workdir.join("assets").join("*.png").to_str().unwrap())? {
+        if let Ok(pt) = fp {
+            if let Some(fname) = pt.file_name() {
+                if fname.to_str().unwrap().starts_with("MapSlice") {
+                    fs::rename(pt.clone(), workdir.join("staging").join("map").join(fname))?;
+                } else {
+                    fs::rename(pt.clone(), workdir.join("staging").join("icons").join(fname))?;
+                }
+            }
+        }
+    }
+
+    let mut output_file = fs::File::create(output_path.clone().join("assets.zip"))?;
+    let mut zipfile = ZipWriter::new(&mut output_file);
+    let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Deflated);
+    let mut buffer: Vec<u8> = Vec::new();
+    set_current_dir(workdir.join("staging"))?;
+    for file_path in WalkDir::new(".") {
+        if let Ok(path) = file_path.and_then(|p| Ok(p.path().to_path_buf())) {
+            if path.is_file() {
+                zipfile.start_file_from_path(&path, options.clone())?;
+
+                let mut f = fs::File::open(path)?;
+                f.read_to_end(&mut buffer)?;
+                zipfile.write_all(&*buffer)?;
+                buffer.clear();
+            } else if path.as_os_str().len() != 0 {
+                zipfile.add_directory_from_path(&path, options.clone())?;
+            }
+        }
     }
 
     Ok(())

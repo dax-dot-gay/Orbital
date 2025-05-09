@@ -9,7 +9,10 @@ pub fn run() {
     #[cfg(debug_assertions)] // only enable instrumentation in development builds
     let devtools = tauri_plugin_devtools::init();
 
-    let mut builder = tauri::Builder::default();
+    let mut builder = tauri::Builder::default()
+        .plugin(tauri_plugin_persisted_scope::init())
+        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(tauri_plugin_persistence::init());
     builder = builder
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet]);

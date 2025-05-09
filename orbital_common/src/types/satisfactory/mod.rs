@@ -21,7 +21,7 @@ use specta::Type;
 pub use utility::{ClassReference, Coercion, IconPath, NormalizedString, AssetReference, parse_docs_json};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
-pub struct SatinData {
+pub struct OrbitalData {
     pub research: HashMap<String, ResearchItem>,
     pub descriptions: HashMap<String, DescriptionItem>,
     pub buildables: HashMap<String, BuildingItem>,
@@ -31,29 +31,29 @@ pub struct SatinData {
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 #[serde(tag = "item_type")]
 #[serde(rename_all = "snake_case")]
-pub enum SatinItem {
+pub enum OrbitalItem {
     Research(ResearchItem),
     Description(DescriptionItem),
     Buildable(BuildingItem),
     Recipe(RecipeItem),
 }
 
-impl SatinData {
-    pub fn get_id(&self, id: String) -> Option<SatinItem> {
+impl OrbitalData {
+    pub fn get_id(&self, id: String) -> Option<OrbitalItem> {
         if let Some(item) = self.research.get(&id) {
-            return Some(SatinItem::Research(item.clone()));
+            return Some(OrbitalItem::Research(item.clone()));
         }
 
         if let Some(item) = self.descriptions.get(&id) {
-            return Some(SatinItem::Description(item.clone()));
+            return Some(OrbitalItem::Description(item.clone()));
         }
 
         if let Some(item) = self.buildables.get(&id) {
-            return Some(SatinItem::Buildable(item.clone()));
+            return Some(OrbitalItem::Buildable(item.clone()));
         }
 
         if let Some(item) = self.recipes.get(&id) {
-            return Some(SatinItem::Recipe(item.clone()));
+            return Some(OrbitalItem::Recipe(item.clone()));
         }
 
         None

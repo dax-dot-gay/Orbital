@@ -1,6 +1,6 @@
 import { Err, Ok } from "ts-results";
-import { ApplicationError, Res } from "./error";
-import { useCallback, useEffect, useState } from "react";
+import { ApplicationError, isResult, Res } from "./error";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { isEqual, isObject, isString } from "lodash";
 
 type LoadingType<T> =
@@ -122,7 +122,7 @@ export function resolveLoading<T, F = T | null>(
     }
 }
 
-export function useLoading<T, F = T | null>(
+export function useFlattenedLoading<T, F = T | null>(
     inner: Loading<T>,
     if_loading?: F,
     if_error?: (error: ApplicationError) => F
@@ -141,6 +141,34 @@ export function useLoading<T, F = T | null>(
     return result;
 }
 
+export function useLoading<T>(inner: Loading<T>): {
+    value: T | null;
+    error: ApplicationError | null;
+    loading: boolean;
+} {
+    const [extracted, setExtracted] = useState<{
+        value: T | null;
+        error: ApplicationError | null;
+        loading: boolean;
+    }>({ value: inner.value, error: inner.err, loading: inner.loading });
+
+    useEffect(() => {
+        if (
+            !isEqual(inner.value, extracted.value) ||
+            !isEqual(inner.err, extracted.error) ||
+            inner.loading !== extracted.loading
+        ) {
+            setExtracted({
+                value: inner.value,
+                error: inner.err,
+                loading: inner.loading,
+            });
+        }
+    }, [inner, setExtracted, extracted]);
+
+    return extracted;
+}
+
 export function useLoadingState<T = object>(
     initialState?: T | ApplicationError | null | Loading<T>
 ): [Loading<T>, (state: T | ApplicationError | null | Loading<T>) => void] {
@@ -156,4 +184,33 @@ export function useLoadingState<T = object>(
     );
 
     return [state, autoSet];
+}
+
+export function useLoadingPromise<A extends any[], R>(
+    callable: (...args: A) => Promise<Res<R> | R | null | ApplicationError>,
+    args: A,
+    _default?: R,
+    onError?: (error: ApplicationError, args: A) => R
+): Loading<R> {
+    const [result, setResult] = useLoadingState<R>(_default);
+
+    useEffect(() => {
+        callable(...args).then((val) =>
+            setResult(isResult<R>(val) ? val.val : val)
+        );
+    }, [setResult, callable, ...args]);
+
+    const { value, error, loading } = useLoading<R>(result);
+
+    const output = useMemo(() => {
+        if (value !== null) {
+            return Ready(value);
+        } else if (error !== null) {
+            return onError ? Ready(onError(error, args)) : Failed<R>(error);
+        } else {
+            return _default === undefined ? Waiting<R>() : Ready(_default);
+        }
+    }, [value, error, loading, _default, onError, ...args]);
+
+    return output;
 }

@@ -7,8 +7,16 @@ import {
     AssetVersionSetter,
     getResourcePath,
 } from "./util";
-import { Loading, useLoadingState } from "../../types/loading";
+import {
+    Loading,
+    useLoading,
+    useLoadingPromise,
+    useLoadingState,
+} from "../../types/loading";
 import * as path_api from "@tauri-apps/api/path";
+import * as fs_api from "@tauri-apps/plugin-fs";
+import { FrontendError } from "../../types/error";
+import { Err, Ok } from "ts-results";
 
 export function useAssetVersionCtx(): AssetVersionContextType {
     return useContext(AssetVersionContext);
@@ -40,6 +48,82 @@ export function useAssetPath(path: string): Loading<string> {
             setResult({ kind: "unset_version" });
         }
     }, [setResult, path, version]);
+
+    return result;
+}
+
+export function useAssetJson<T extends object = object>(
+    path: string,
+    default_value?: T
+): Loading<T> {
+    const assetPath = useLoading(useAssetPath(path));
+    const result: Loading<T> = useLoadingPromise(
+        async (
+            value: string | null,
+            error: FrontendError | null,
+            _: boolean
+        ) => {
+            if (value) {
+                try {
+                    const fileContents = await fs_api.readTextFile(value);
+
+                    try {
+                        return Ok(JSON.parse(fileContents) as T);
+                    } catch (_) {
+                        return Err({
+                            kind: "json",
+                            operation: "decode",
+                            data: fileContents,
+                        });
+                    }
+                } catch (_) {
+                    return Err({
+                        kind: "file_operation",
+                        operation: "open",
+                        path: value,
+                    });
+                }
+            } else {
+                return error ? Err(error) : null;
+            }
+        },
+        [assetPath.value, assetPath.error, assetPath.loading],
+        default_value
+    );
+
+    return result;
+}
+
+export function useAssetText(
+    path: string,
+    default_value?: string
+): Loading<string> {
+    const assetPath = useLoading(useAssetPath(path));
+    const result: Loading<string> = useLoadingPromise(
+        async (
+            value: string | null,
+            error: FrontendError | null,
+            _: boolean
+        ) => {
+            if (value) {
+                try {
+                    const fileContents = await fs_api.readTextFile(value);
+
+                    return Ok(fileContents);
+                } catch (_) {
+                    return Err({
+                        kind: "file_operation",
+                        operation: "open",
+                        path: value,
+                    });
+                }
+            } else {
+                return error ? Err(error) : null;
+            }
+        },
+        [assetPath.value, assetPath.error, assetPath.loading],
+        default_value
+    );
 
     return result;
 }

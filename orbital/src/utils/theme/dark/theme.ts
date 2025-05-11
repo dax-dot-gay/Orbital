@@ -973,7 +973,7 @@ export const shadcnTheme: MantineThemeOverride = createTheme({
         }),
         Paper: Paper.extend({
             defaultProps: {
-                shadow: "xl",
+                shadow: "sm",
             },
         }),
     },

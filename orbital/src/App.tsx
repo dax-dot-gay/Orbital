@@ -17,6 +17,7 @@ import { shadcnTheme as lightTheme } from "./utils/theme/light/theme";
 import "./utils/theme/style.css";
 import { Routing } from "./views/routes";
 import { LocalizationProvider } from "./utils/Localization";
+import { AssetVersionProvider } from "./utils/asset/AssetVersionProvider";
 
 export function App() {
     const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
@@ -24,20 +25,22 @@ export function App() {
     return (
         <ThemeContext.Provider value={[themeMode, setThemeMode]}>
             <LocalizationProvider>
-                <MantineProvider
-                    forceColorScheme={themeMode}
-                    theme={themeMode === "dark" ? darkTheme : lightTheme}
-                    cssVariablesResolver={
-                        themeMode === "dark"
-                            ? darkVariableResolver
-                            : lightVariableResolver
-                    }
-                >
-                    <ModalsProvider>
-                        <Notifications />
-                        <Routing />
-                    </ModalsProvider>
-                </MantineProvider>
+                <AssetVersionProvider>
+                    <MantineProvider
+                        forceColorScheme={themeMode}
+                        theme={themeMode === "dark" ? darkTheme : lightTheme}
+                        cssVariablesResolver={
+                            themeMode === "dark"
+                                ? darkVariableResolver
+                                : lightVariableResolver
+                        }
+                    >
+                        <ModalsProvider>
+                            <Notifications />
+                            <Routing />
+                        </ModalsProvider>
+                    </MantineProvider>
+                </AssetVersionProvider>
             </LocalizationProvider>
         </ThemeContext.Provider>
     );

@@ -371,7 +371,8 @@ export const shadcnTheme: MantineThemeOverride = createTheme({
     primaryShade: { light: 5, dark: 6 },
     autoContrast: true,
     luminanceThreshold: 0.3,
-    fontFamily: "Geist",
+    fontFamily: "Fira Sans",
+    fontFamilyMonospace: "Fira Code",
     radius: {
         xs: rem("6px"),
         sm: rem("8px"),
@@ -379,7 +380,7 @@ export const shadcnTheme: MantineThemeOverride = createTheme({
         lg: rem("16px"),
         xl: rem("24px"),
     },
-    defaultRadius: "sm",
+    defaultRadius: "xs",
     spacing: {
         "4xs": rem("2px"),
         "3xs": rem("4px"),
@@ -412,7 +413,7 @@ export const shadcnTheme: MantineThemeOverride = createTheme({
     },
 
     headings: {
-        fontFamily: "Geist",
+        fontFamily: "Fira Code",
         sizes: {
             h1: {
                 fontSize: rem("36px"),
@@ -636,6 +637,9 @@ export const shadcnTheme: MantineThemeOverride = createTheme({
                         })(),
                     },
                 };
+            },
+            defaultProps: {
+                fw: "400",
             },
         }),
         Anchor: Anchor.extend({

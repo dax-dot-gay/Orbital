@@ -6,12 +6,19 @@ import {
     Center,
     Divider,
     Group,
+    ScrollArea,
     Stack,
     Text,
+    ThemeIcon,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Outlet } from "react-router";
-import { TbMoonFilled, TbSatellite, TbSun } from "react-icons/tb";
+import {
+    TbBuildingFactory,
+    TbMoonFilled,
+    TbSatellite,
+    TbSun,
+} from "react-icons/tb";
 import { useTranslation } from "react-i18next";
 import { useAppTheme } from "../../utils/theme/themeContext";
 
@@ -76,7 +83,30 @@ export function AppLayout() {
                     </Center>
                 </Group>
             </AppShell.Header>
-            <AppShell.Navbar className="app-nav"></AppShell.Navbar>
+            <AppShell.Navbar className="app-nav">
+                <Stack className="nav-stack" gap={0} p={0}>
+                    <Group
+                        gap="sm"
+                        wrap="nowrap"
+                        h="63px"
+                        px="md"
+                        align="center"
+                    >
+                        <ThemeIcon size="lg" radius="sm">
+                            <TbBuildingFactory size={24} />
+                        </ThemeIcon>
+                        <Stack gap={0} style={{ flexGrow: 1 }}>
+                            <Text lineClamp={1}>
+                                Test Factory With A Very Long Name
+                            </Text>
+                            <Text c="dimmed" size="xs">
+                                1.0 - Stable
+                            </Text>
+                        </Stack>
+                    </Group>
+                    <Divider />
+                </Stack>
+            </AppShell.Navbar>
             <AppShell.Main
                 className={collapsed ? "app-body collapsed" : "app-body"}
             >

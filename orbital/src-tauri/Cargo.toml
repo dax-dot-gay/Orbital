@@ -27,9 +27,10 @@ tauri-plugin-persisted-scope = "2"
 tauri-plugin-fs = "2"
 log = { version = "0.4.27", features = ["serde", "std"] }
 tauri-plugin-dialog = "2"
-specta-typescript = "0.0.9"
-tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
 orbital_common = {version = "*", path = "../../orbital_common"}
 tauri-plugin-zustand = "0.1.2"
-specta = {version = "=2.0.0-rc.22", features = ["derive", "function"] }
+specta = {version = "=2.0.0-rc.22", features = ["derive"] }
+taurpc = "0.5.0"
+specta-typescript = "0.0.9"
+tokio = { version = "1.45.0", features = ["full"] }
 

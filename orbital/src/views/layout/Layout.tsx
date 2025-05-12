@@ -22,13 +22,15 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAppTheme } from "../../utils/theme/themeContext";
 import { invoke } from "@tauri-apps/api/core";
+import { useApi } from "../../utils/api";
 
 export function AppLayout() {
     const [collapsed, { toggle: toggleCollapsed }] = useDisclosure(false);
     const { t } = useTranslation();
     const [theme, setTheme] = useAppTheme();
+    const api = useApi();
 
-    invoke("test_command").then(console.log);
+    api.app_version().then(console.log);
 
     return (
         <AppShell

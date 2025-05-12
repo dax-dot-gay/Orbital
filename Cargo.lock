@@ -2341,6 +2341,15 @@ dependencies = [
 
 [[package]]
 name = "itertools"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
@@ -3136,7 +3145,8 @@ dependencies = [
  "tauri-plugin-persisted-scope",
  "tauri-plugin-persistence",
  "tauri-plugin-zustand",
- "tauri-specta",
+ "taurpc",
+ "tokio",
 ]
 
 [[package]]
@@ -5085,6 +5095,39 @@ dependencies = [
  "embed-resource",
  "indexmap 2.9.0",
  "toml",
+]
+
+[[package]]
+name = "taurpc"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c34f21c40a46c1e5f859eeb51427706dde816b55d6d9baf2dab4d952aff191a1"
+dependencies = [
+ "anyhow",
+ "heck 0.5.0",
+ "itertools 0.13.0",
+ "serde",
+ "serde_json",
+ "specta",
+ "specta-macros",
+ "specta-serde",
+ "specta-typescript",
+ "tauri",
+ "taurpc-macros",
+ "tokio",
+]
+
+[[package]]
+name = "taurpc-macros"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39137974c051ae93c437b004082541bd0f2f0f69c0d9e30c16266983cd952d4f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_json",
+ "syn 2.0.101",
 ]
 
 [[package]]

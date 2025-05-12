@@ -6,8 +6,45 @@ import {
 } from "taurpc";
 type TAURI_CHANNEL<T> = (response: T) => void;
 
-const ARGS_MAP = { "": '{"app_version":[]}' };
-export type Router = { "": { app_version: () => Promise<string> } };
+export type AssetVersionError = never;
+
+export type CommandError = {
+    path: "api.asset_versions";
+    error: AssetVersionError;
+};
+
+export type CommonError = { category: "docs"; error: DocsError };
+
+export type DocsError =
+    | { kind: "unknown_locale"; locale: string }
+    | { kind: "failed_read"; path: string; reason: string }
+    | { kind: "invalid_format"; reason: string };
+
+export type Error =
+    | { source: "common_internals"; error: CommonError }
+    | { source: "command"; error: CommandError }
+    | { source: "operation"; error: OperationError }
+    | { source: "tauri"; reason: string };
+
+export type InvalidPathType =
+    | "format"
+    | "exists"
+    | "not_exists"
+    | "expected_file"
+    | "expected_folder";
+
+export type OperationError =
+    | { kind: "invalid_path_error"; path: string; invalid: InvalidPathType }
+    | { kind: "filesystem"; reason: string };
+
+const ARGS_MAP = {
+    asset_versions: '{"list_available":[]}',
+    "": '{"app_version":[]}',
+};
+export type Router = {
+    asset_versions: { list_available: () => Promise<string[]> };
+    "": { app_version: () => Promise<string> };
+};
 
 export type { InferCommandOutput };
 export const createTauRPCProxy = () => createProxy<Router>(ARGS_MAP);

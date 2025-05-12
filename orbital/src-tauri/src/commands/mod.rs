@@ -1,3 +1,4 @@
+use asset_version::AssetVersionsApi;
 use tauri::{ipc::Invoke, Wry};
 use taurpc::Router;
 
@@ -20,7 +21,8 @@ impl Api for ApiImpl {
 
 pub fn routes() -> impl Fn(Invoke) -> bool {
     let mut router = Router::<Wry>::new()
-        .merge(ApiImpl.into_handler());
+        .merge(ApiImpl.into_handler())
+        .merge(asset_version::AssetVersionsImpl.into_handler());
 
     #[cfg(debug_assertions)]
     {

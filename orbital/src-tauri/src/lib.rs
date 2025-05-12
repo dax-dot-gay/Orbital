@@ -3,6 +3,9 @@ mod commands;
 use commands::routes;
 pub mod error;
 
+pub use error::{Error, Result};
+pub(crate) use error::*;
+
 #[tokio::main]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub async fn run() {

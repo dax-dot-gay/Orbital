@@ -43,7 +43,7 @@ impl DocsError {
 
 #[derive(Error, Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(tag = "category", rename_all = "snake_case")]
-pub enum Error {
+pub enum CommonError {
     #[error(transparent)]
     Docs { 
         #[serde(flatten)]
@@ -51,10 +51,10 @@ pub enum Error {
     },
 }
 
-impl From<DocsError> for Error {
+impl From<DocsError> for CommonError {
     fn from(value: DocsError) -> Self {
         Self::Docs { error: value }
     }
 }
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, CommonError>;

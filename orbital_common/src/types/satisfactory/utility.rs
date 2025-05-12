@@ -221,11 +221,11 @@ pub fn parse_docs_json(docs_folder: PathBuf, locale: String) -> crate::Result<Va
     let mut file_bytes: Vec<u8> = Vec::new();
     let file_bytesize = File::open(&combined_path)
         .or_else(|e| {
-            Err::<File, crate::Error>(DocsError::failed_read(combined_path.as_path(), e).into())
+            Err::<File, crate::CommonError>(DocsError::failed_read(combined_path.as_path(), e).into())
         })?
         .read_to_end(&mut file_bytes)
         .or_else(|e| {
-            Err::<usize, crate::Error>(DocsError::failed_read(combined_path.as_path(), e).into())
+            Err::<usize, crate::CommonError>(DocsError::failed_read(combined_path.as_path(), e).into())
         })?;
 
     if file_bytesize % 2 != 0 {
@@ -239,7 +239,7 @@ pub fn parse_docs_json(docs_folder: PathBuf, locale: String) -> crate::Result<Va
     let decoded = decode_utf16(iter)
         .collect::<Result<String, _>>()
         .or_else(|e| {
-            Err::<String, crate::Error>(
+            Err::<String, crate::CommonError>(
                 DocsError::invalid_format(format!("Bad UTF-16 encoding: {:?}", e)).into(),
             )
         })?;

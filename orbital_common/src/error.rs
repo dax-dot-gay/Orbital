@@ -4,9 +4,10 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
 use thiserror::Error;
 
-#[derive(Error, Clone, Debug, Serialize, Deserialize)]
+#[derive(Error, Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum DocsError {
     #[error("Unknown locale: {locale}")]
@@ -40,11 +41,14 @@ impl DocsError {
     }
 }
 
-#[derive(Error, Clone, Debug, Serialize, Deserialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
+#[derive(Error, Clone, Debug, Serialize, Deserialize, Type)]
+#[serde(tag = "category", rename_all = "snake_case")]
 pub enum Error {
     #[error(transparent)]
-    Docs { error: DocsError },
+    Docs { 
+        #[serde(flatten)]
+        error: DocsError 
+    },
 }
 
 impl From<DocsError> for Error {

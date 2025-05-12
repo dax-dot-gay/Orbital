@@ -1,6 +1,7 @@
 mod commands;
 
 use commands::routes;
+pub mod error;
 
 #[tokio::main]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

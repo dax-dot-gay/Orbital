@@ -1,6 +1,8 @@
 use tauri::{ipc::Invoke, Wry};
 use taurpc::Router;
 
+mod asset_version;
+
 #[taurpc::procedures(export_to = "../src/bindings.ts")]
 trait Api {
     async fn app_version() -> String;

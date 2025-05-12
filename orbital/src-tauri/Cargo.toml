@@ -31,4 +31,5 @@ specta-typescript = "0.0.9"
 tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
 orbital_common = {version = "*", path = "../../orbital_common"}
 tauri-plugin-zustand = "0.1.2"
+specta = {version = "=2.0.0-rc.22", features = ["derive", "function"] }
 

@@ -21,11 +21,14 @@ import {
 } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
 import { useAppTheme } from "../../utils/theme/themeContext";
+import { invoke } from "@tauri-apps/api/core";
 
 export function AppLayout() {
     const [collapsed, { toggle: toggleCollapsed }] = useDisclosure(false);
     const { t } = useTranslation();
     const [theme, setTheme] = useAppTheme();
+
+    invoke("test_command").then(console.log);
 
     return (
         <AppShell

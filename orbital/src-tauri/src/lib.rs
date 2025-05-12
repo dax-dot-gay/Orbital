@@ -1,9 +1,14 @@
 use orbital_common::types::satisfactory::OrbitalData;
+use tauri_specta::collect_commands;
+
+
+mod commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     #[allow(unused_mut)]
     let mut specta_builder = tauri_specta::Builder::<tauri::Wry>::new()
+    .commands(collect_commands![commands::asset_versions::list_asset_versions])
         .typ::<OrbitalData>();
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds
@@ -18,7 +23,7 @@ pub fn run() {
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_persistence::init())
         .plugin(tauri_plugin_zustand::init())
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(specta_builder.invoke_handler())
         .setup(move |app| {
             specta_builder.mount_events(app);
             Ok(())

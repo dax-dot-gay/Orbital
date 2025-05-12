@@ -3126,6 +3126,7 @@ dependencies = [
  "orbital_common",
  "serde",
  "serde_json",
+ "specta",
  "specta-typescript",
  "tauri",
  "tauri-build",

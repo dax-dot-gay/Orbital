@@ -1,7 +1,6 @@
 import {
     ActionIcon,
     AppShell,
-    Avatar,
     Burger,
     Center,
     Divider,
@@ -53,9 +52,9 @@ export function AppLayout() {
                     </Center>
                     <Group gap="sm" p={0} h="100%" style={{ flexGrow: 2 }}>
                         <Divider orientation="vertical" />
-                        <Avatar size="md" radius="sm" variant="filled">
+                        <ThemeIcon size="xl" radius="sm" variant="filled">
                             <TbSatellite size={24} />
-                        </Avatar>
+                        </ThemeIcon>
                         <Stack gap={0}>
                             <Text ff="monospace" size="lg" lh="md">
                                 {t("app.name")}
@@ -92,7 +91,7 @@ export function AppLayout() {
                         px="md"
                         align="center"
                     >
-                        <ThemeIcon size="lg" radius="sm">
+                        <ThemeIcon size="xl" radius="sm">
                             <TbBuildingFactory size={24} />
                         </ThemeIcon>
                         <Stack gap={0} style={{ flexGrow: 1 }}>

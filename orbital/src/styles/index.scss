@@ -33,3 +33,14 @@
         overflow-y: hidden;
     }
 }
+
+html {
+    &[data-mantine-color-scheme="dark"] {
+        --mantine-color-body: #0e0e0e !important;
+        
+    }
+
+    &[data-mantine-color-scheme="light"] {
+        --mantine-color-body: #ffffff !important;
+    }
+}

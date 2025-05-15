@@ -4,21 +4,12 @@ import { useState } from "react";
 import { ThemeContext, ThemeMode } from "./utils/theme/themeContext";
 
 import "./styles/index.scss";
-
-// DARK THEME
-import { shadcnCssVariableResolver as darkVariableResolver } from "./utils/theme/dark/cssVariableResolver";
-import { shadcnTheme as darkTheme } from "./utils/theme/dark/theme";
-
-// LIGHT THEME
-import { shadcnCssVariableResolver as lightVariableResolver } from "./utils/theme/light/cssVariableResolver";
-import { shadcnTheme as lightTheme } from "./utils/theme/light/theme";
-
-import "./utils/theme/style.css";
 import { Routing } from "./views/routes";
 import { LocalizationProvider } from "./utils/Localization";
 import { AssetVersionProvider } from "./utils/asset/AssetVersionProvider";
 import { ApiProvider } from "./utils/api/ApiProvider";
 import { OpenModalProvider } from "./modals";
+import { ThemeDark, ThemeLight } from "./utils/theme/themes";
 
 export function App() {
     const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
@@ -31,12 +22,7 @@ export function App() {
                         <MantineProvider
                             forceColorScheme={themeMode}
                             theme={
-                                themeMode === "dark" ? darkTheme : lightTheme
-                            }
-                            cssVariablesResolver={
-                                themeMode === "dark"
-                                    ? darkVariableResolver
-                                    : lightVariableResolver
+                                themeMode === "dark" ? ThemeDark : ThemeLight
                             }
                         >
                             <OpenModalProvider>

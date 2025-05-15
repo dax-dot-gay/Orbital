@@ -42,7 +42,7 @@ export function StartupView() {
                         <Title order={1}>{t("app.name")}</Title>
                     </Group>
                 </Stack>
-                <Paper className="startup-list" withBorder p="sm" radius="xs">
+                <Paper className="startup-list" withBorder p="sm" shadow="sm">
                     {false ? (
                         <ScrollArea mah="100%" style={{ overflowY: "scroll" }}>
                             <SimpleGrid

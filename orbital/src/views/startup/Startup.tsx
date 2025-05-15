@@ -76,6 +76,7 @@ export function StartupView() {
                                 leftSection={<TbMapPlus size={20} />}
                                 size="sm"
                                 justify="space-between"
+                                onClick={() => openCreate()}
                             >
                                 {t("views.start.createProject")}
                             </Button>

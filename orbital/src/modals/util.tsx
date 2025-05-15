@@ -65,7 +65,7 @@ export function createModal<T extends object | undefined = undefined>(
                     innerProps: props ?? {},
                     title: (
                         <Group gap="sm">
-                            <IconElement size="28" />
+                            <IconElement size="24" />
                             <Stack gap={0}>
                                 <Text size="lg" fw="400">
                                     {titleString}

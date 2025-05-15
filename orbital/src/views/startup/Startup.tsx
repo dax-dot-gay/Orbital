@@ -19,9 +19,11 @@ import {
     TbX,
 } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
+import { useModal } from "../../modals";
 
 export function StartupView() {
     const { t } = useTranslation();
+    const { open: openCreate, close: closeCreate } = useModal("createProject");
     return (
         <Box className="view startup">
             <Stack gap="sm" className="startup-stack">
@@ -99,6 +101,7 @@ export function StartupView() {
                         leftSection={<TbMapPlus size={20} />}
                         size="sm"
                         justify="space-between"
+                        onClick={() => openCreate()}
                     >
                         {t("views.start.createProject")}
                     </Button>

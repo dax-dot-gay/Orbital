@@ -42,8 +42,8 @@ const ARGS_MAP = {
     "": '{"app_version":[]}',
 };
 export type Router = {
-    asset_versions: { list_available: () => Promise<string[]> };
     "": { app_version: () => Promise<string> };
+    asset_versions: { list_available: () => Promise<string[]> };
 };
 
 export type { InferCommandOutput };

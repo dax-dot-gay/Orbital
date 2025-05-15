@@ -1,17 +1,22 @@
 {
-  "app": {
-    "name": "Orbital",
-    "subtitle": "Factory Planner"
-  },
-  "actions": {
-    "remove": "Remove",
-    "open": "Open"
-  },
-  "views": {
-    "start": {
-      "createProject": "Create Project",
-      "titleWelcome": "Welcome To",
-      "noProjects": "No saved projects!"
+    "app": {
+        "name": "Orbital",
+        "subtitle": "Factory Planner"
+    },
+    "actions": {
+        "remove": "Remove",
+        "open": "Open"
+    },
+    "views": {
+        "start": {
+            "createProject": "Create Project",
+            "titleWelcome": "Welcome To",
+            "noProjects": "No saved projects!"
+        }
+    },
+    "modals": {
+        "createProject": {
+            "title": "Create Project"
+        }
     }
-  }
 }

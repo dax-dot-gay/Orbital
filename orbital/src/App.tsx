@@ -1,6 +1,5 @@
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import { ModalsProvider } from "@mantine/modals";
 import { useState } from "react";
 import { ThemeContext, ThemeMode } from "./utils/theme/themeContext";
 
@@ -19,6 +18,7 @@ import { Routing } from "./views/routes";
 import { LocalizationProvider } from "./utils/Localization";
 import { AssetVersionProvider } from "./utils/asset/AssetVersionProvider";
 import { ApiProvider } from "./utils/api/ApiProvider";
+import { OpenModalProvider } from "./modals";
 
 export function App() {
     const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
@@ -39,10 +39,10 @@ export function App() {
                                     : lightVariableResolver
                             }
                         >
-                            <ModalsProvider>
+                            <OpenModalProvider>
                                 <Notifications />
                                 <Routing />
-                            </ModalsProvider>
+                            </OpenModalProvider>
                         </MantineProvider>
                     </AssetVersionProvider>
                 </LocalizationProvider>

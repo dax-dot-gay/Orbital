@@ -1,4 +1,5 @@
 import {
+    Button,
     createTheme,
     DefaultMantineColor,
     MantineColorsTuple,
@@ -36,6 +37,9 @@ const themeDefaults: MantineThemeOverride = {
     luminanceThreshold: 0.4,
     autoContrast: true,
     defaultRadius: "sm",
+    components: {
+        Button: Button.extend({ defaultProps: { fw: "normal" } }),
+    },
 };
 
 export const ThemeDark = createTheme({

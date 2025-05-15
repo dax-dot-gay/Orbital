@@ -5,7 +5,9 @@
   },
   "actions": {
     "remove": "Remove",
-    "open": "Open"
+    "open": "Open",
+    "cancel": "Cancel",
+    "create": "Create"
   },
   "views": {
     "start": {
@@ -20,7 +22,18 @@
       "name": {
         "label": "Project Name",
         "placeholder": "Spaghettiland"
+      },
+      "assetVersion": {
+        "label": "Game Version"
+      },
+      "error": {
+        "noVersions": "Unable to resolve asset versions."
       }
+    }
+  },
+  "errors": {
+    "form": {
+      "required": "This field is required!"
     }
   }
 }

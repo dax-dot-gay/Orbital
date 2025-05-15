@@ -35,9 +35,27 @@
 }
 
 html {
+    .mantine-InputWrapper-label {
+        font-weight: 400 !important;
+    }
+
     &[data-mantine-color-scheme="dark"] {
         --mantine-color-body: #0e0e0e !important;
+        --mantine-color-default: #171717 !important;
+
+        .mantine-Popover-dropdown {
+            background-color: var(--mantine-color-default) !important;
+        }
         
+        .mantine-Input-wrapper {
+
+            &[data-variant="default"] {
+                --input-bg: var(--mantine-color-default) !important;
+            }
+            &[data-variant="filled"] {
+                --input-bg: var(--mantine-color-default) !important;
+            }
+        }
     }
 
     &[data-mantine-color-scheme="light"] {

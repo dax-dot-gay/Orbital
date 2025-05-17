@@ -2,6 +2,7 @@ mod commands;
 
 use commands::routes;
 pub mod error;
+pub mod utils;
 
 pub use error::{Error, Result};
 pub(crate) use error::*;
@@ -16,7 +17,12 @@ pub async fn run() {
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_persistence::init())
         .plugin(tauri_plugin_zustand::init())
-        .invoke_handler(routes());
+        .invoke_handler(routes())
+        .setup(|app| {
+            utils::AppState::attach(app.handle());
+
+            Ok(())
+        });
 
     builder
         .run(tauri::generate_context!())

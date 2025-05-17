@@ -38,12 +38,14 @@ export type OperationError =
     | { kind: "filesystem"; reason: string };
 
 const ARGS_MAP = {
-    asset_versions: '{"list_available":[]}',
     "": '{"app_version":[]}',
+    asset_versions: '{"list_available":[]}',
+    projects: '{"project_path":[]}',
 };
 export type Router = {
-    "": { app_version: () => Promise<string> };
     asset_versions: { list_available: () => Promise<string[]> };
+    "": { app_version: () => Promise<string> };
+    projects: { project_path: () => Promise<string> };
 };
 
 export type { InferCommandOutput };

@@ -9,5 +9,6 @@
         "**/*.sass",
         "**/*.less",
         "orbital/node_modules/@mantine/core/styles.css"
-    ]
+    ],
+    "rust-analyzer.procMacro.attributes.enable": true
 }

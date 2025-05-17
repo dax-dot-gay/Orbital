@@ -1,8 +1,10 @@
 use asset_version::AssetVersionsApi;
+use projects::ProjectsApi;
 use tauri::{ipc::Invoke, Wry};
 use taurpc::Router;
 
 mod asset_version;
+mod projects;
 
 #[taurpc::procedures(export_to = "../src/bindings.ts")]
 trait Api {
@@ -22,7 +24,8 @@ impl Api for ApiImpl {
 pub fn routes() -> impl Fn(Invoke) -> bool {
     let mut router = Router::<Wry>::new()
         .merge(ApiImpl.into_handler())
-        .merge(asset_version::AssetVersionsImpl.into_handler());
+        .merge(asset_version::AssetVersionsImpl.into_handler())
+        .merge(projects::ProjectsImpl.into_handler());
 
     #[cfg(debug_assertions)]
     {

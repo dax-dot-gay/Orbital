@@ -57,6 +57,30 @@ impl OperationError {
 }
 
 #[derive(thiserror::Error, Serialize, Deserialize, Type, Clone, Debug)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum ProjectError {
+    #[error("Project already exists: {id}")]
+    ProjectExists {
+        id: String
+    },
+
+    #[error("Project does not exist: {id}")]
+    ProjectDoesntExist {
+        id: String
+    }
+}
+
+impl ProjectError {
+    pub fn exists(id: impl AsRef<str>) -> Error {
+        Error::Project { error: Self::ProjectExists { id: id.as_ref().to_string() } }
+    }
+
+    pub fn not_exists(id: impl AsRef<str>) -> Error {
+        Error::Project { error: Self::ProjectDoesntExist { id: id.as_ref().to_string() } }
+    }
+}
+
+#[derive(thiserror::Error, Serialize, Deserialize, Type, Clone, Debug)]
 #[serde(tag = "source", rename_all = "snake_case")]
 pub enum Error {
     #[error("Encountered an error in backend utilities: {error}")]
@@ -93,6 +117,13 @@ pub enum Error {
         #[serde(flatten)]
         #[from]
         error: tauri_plugin_persistence::Error
+    },
+
+    #[error("Project management error: {error:?}")]
+    Project {
+        #[serde(flatten)]
+        #[from]
+        error: ProjectError
     }
 }
 

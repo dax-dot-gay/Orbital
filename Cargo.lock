@@ -3323,6 +3323,8 @@ dependencies = [
  "anyhow",
  "async-trait",
  "bevy_reflect",
+ "bson",
+ "convert_case 0.8.0",
  "derive_builder",
  "log",
  "maplit",
@@ -5144,9 +5146,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-persistence"
-version = "0.1.1"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf48ccf960ae9743a38f7b1f485650fd3228db6bd8c5960ea34067a915eaec6c"
+checksum = "e6d69f8098a460b76b8b34fd064f403760ab17d93b0db5ca302f08e2dab51487"
 dependencies = [
  "anyhow",
  "async-dup",

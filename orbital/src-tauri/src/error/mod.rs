@@ -37,6 +37,16 @@ pub enum OperationError {
 
         #[serde(skip)]
         error: Option<Arc<io::Error>>
+    },
+
+    #[error("Serialization failed: {reason}")]
+    Serialization {
+        reason: String
+    },
+
+    #[error("Deserialization failed: {reason}")]
+    Deserialization {
+        reason: String
     }
 }
 
@@ -76,6 +86,13 @@ pub enum Error {
 
         #[serde(skip)]
         error: Option<Arc<tauri::Error>>
+    },
+
+    #[error("Encountered an error in the Persistence API: {error:?}")]
+    Persistence {
+        #[serde(flatten)]
+        #[from]
+        error: tauri_plugin_persistence::Error
     }
 }
 
@@ -88,6 +105,16 @@ impl From<tauri::Error> for Error {
 impl From<io::Error> for Error {
     fn from(value: io::Error) -> Self {
         Self::Operation { error: OperationError::Filesystem { reason: value.to_string(), error: Some(Arc::new(value)) } }
+    }
+}
+
+impl Error {
+    pub fn serialization(error: impl serde::ser::Error) -> Self {
+        Self::Operation { error: OperationError::Serialization { reason: error.to_string() } }
+    }
+
+    pub fn deserialization(error: impl serde::de::Error) -> Self {
+        Self::Operation { error: OperationError::Deserialization { reason: error.to_string() } }
     }
 }
 

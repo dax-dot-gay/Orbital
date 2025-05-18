@@ -101,6 +101,10 @@ impl<R: Runtime> Project<R> {
             .await
             .or_else(|e| Err(crate::Error::from(e)))
     }
+
+    pub fn id(&self) -> String {
+        self.config().id
+    }
 }
 
 #[async_trait::async_trait]

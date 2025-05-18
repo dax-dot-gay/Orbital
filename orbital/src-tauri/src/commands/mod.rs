@@ -25,7 +25,7 @@ pub fn routes() -> impl Fn(Invoke) -> bool {
     let mut router = Router::<Wry>::new()
         .merge(ApiImpl.into_handler())
         .merge(asset_version::AssetVersionsImpl.into_handler())
-        .merge(projects::ProjectsImpl::<Wry>::new().into_handler());
+        .merge(projects::ProjectsImpl::new().into_handler());
 
     #[cfg(debug_assertions)]
     {

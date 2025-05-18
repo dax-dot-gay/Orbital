@@ -12,31 +12,23 @@ pub struct ProjectCreationModel {
     pub asset_version: String,
 }
 
-pub struct HandleWrapper<R: Runtime>(AppHandle<R>);
-
-impl<'a, R: Runtime> CommandArg<'_, R> for HandleWrapper<R> {
-    fn from_command(command: tauri::ipc::CommandItem<'_, R>) -> Result<Self, tauri::ipc::InvokeError> {
-        Ok(Self(command.message.webview().app_handle().clone()))
-    }
-}
-
 #[taurpc::procedures(path = "projects")]
-pub trait ProjectsApi<K: Runtime = Wry> {
-    async fn list_projects(app_handle: HandleWrapper<K>) -> crate::Result<Vec<ProjectConfig>>;
-    async fn create_project(app_handle: HandleWrapper<K>, model: ProjectCreationModel) -> crate::Result<ProjectConfig>;
-    async fn open_project(app_handle: HandleWrapper<K>, id: String) -> crate::Result<ProjectConfig>;
-    async fn close_project(app_handle: HandleWrapper<K>) -> crate::Result<()>;
-    async fn remove_project(app_handle: HandleWrapper<K>, id: String) -> crate::Result<()>;
-    async fn current_project(app_handle: HandleWrapper<K>) -> crate::Result<Option<ProjectConfig>>;
-    async fn project_config(app_handle: HandleWrapper<K>, id: String) -> crate::Result<ProjectConfig>;
+pub trait ProjectsApi {
+    async fn list_projects(app_handle: AppHandle) -> crate::Result<Vec<ProjectConfig>>;
+    async fn create_project(app_handle: AppHandle, model: ProjectCreationModel) -> crate::Result<ProjectConfig>;
+    async fn open_project(app_handle: AppHandle, id: String) -> crate::Result<ProjectConfig>;
+    async fn close_project(app_handle: AppHandle) -> crate::Result<()>;
+    async fn remove_project(app_handle: AppHandle, id: String) -> crate::Result<()>;
+    async fn current_project(app_handle: AppHandle) -> crate::Result<Option<ProjectConfig>>;
+    async fn project_config(app_handle: AppHandle, id: String) -> crate::Result<ProjectConfig>;
 }
 
-pub struct ProjectsImpl<R: Runtime> {
+pub struct ProjectsImpl {
     active: Arc<Mutex<Option<String>>>,
-    project: Arc<Mutex<Option<Project<R>>>>,
+    project: Arc<Mutex<Option<Project>>>,
 }
 
-impl<R: Runtime> Clone for ProjectsImpl<R> {
+impl Clone for ProjectsImpl {
     fn clone(&self) -> Self {
         Self {
             active: self.active.clone(),
@@ -45,7 +37,7 @@ impl<R: Runtime> Clone for ProjectsImpl<R> {
     }
 }
 
-impl<R: Runtime> ProjectsImpl<R> {
+impl ProjectsImpl {
     pub fn new() -> Self {
         Self {
             active: Arc::new(Mutex::new(None)),
@@ -53,7 +45,7 @@ impl<R: Runtime> ProjectsImpl<R> {
         }
     }
 
-    pub async fn set_active(&self, project: Project<R>) -> () {
+    pub async fn set_active(&self, project: Project) -> () {
         let mut active = self.active.lock().await;
         let mut project_ref = self.project.lock().await;
 
@@ -76,7 +68,7 @@ impl<R: Runtime> ProjectsImpl<R> {
 }
 
 #[taurpc::resolvers]
-impl<R: Runtime> ProjectsApi for ProjectsImpl<R> {
+impl ProjectsApi for ProjectsImpl {
     async fn list_projects(self, app_handle: AppHandle<impl Runtime>) -> crate::Result<Vec<ProjectConfig>> {
         app_handle.list_projects().await
     }

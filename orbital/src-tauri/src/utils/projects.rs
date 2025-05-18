@@ -4,7 +4,7 @@ use convert_case::{Case, Casing};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_slice, to_string_pretty};
 use specta::Type;
-use tauri::{AppHandle, Manager, Runtime};
+use tauri::{AppHandle, Manager, Wry};
 use tauri_plugin_persistence::{
     types::ContextSpecifier, Context, Database, FileHandleMode, PersistenceExt,
 };
@@ -31,13 +31,13 @@ impl ProjectConfig {
     }
 }
 
-pub struct Project<R: Runtime> {
-    context: Context<R>,
+pub struct Project {
+    context: Context<Wry>,
     config: ProjectConfig,
-    handle: AppHandle<R>,
+    handle: AppHandle<Wry>,
 }
 
-impl<R: Runtime> Clone for Project<R> {
+impl Clone for Project {
     fn clone(&self) -> Self {
         Self {
             context: self.context.clone(),
@@ -47,7 +47,7 @@ impl<R: Runtime> Clone for Project<R> {
     }
 }
 
-impl<R: Runtime> Project<R> {
+impl Project {
     pub async fn projects_directory(&self) -> PathBuf {
         self.handle.app_state().await.project_path
     }
@@ -95,7 +95,7 @@ impl<R: Runtime> Project<R> {
         Ok(())
     }
 
-    pub async fn database(&self) -> crate::Result<Database<R>> {
+    pub async fn database(&self) -> crate::Result<Database<Wry>> {
         self.context
             .open_database("project", "project.db")
             .await
@@ -108,21 +108,21 @@ impl<R: Runtime> Project<R> {
 }
 
 #[async_trait::async_trait]
-pub trait ProjectsExt<R: Runtime> {
+pub trait ProjectsExt {
     async fn projects_directory(&self) -> PathBuf;
-    async fn create_project(&self, config: ProjectConfig) -> crate::Result<Project<R>>;
-    async fn existing_project(&self, config: ProjectConfig) -> crate::Result<Project<R>>;
+    async fn create_project(&self, config: ProjectConfig) -> crate::Result<Project>;
+    async fn existing_project(&self, config: ProjectConfig) -> crate::Result<Project>;
     async fn remove_project(&self, id: String) -> crate::Result<()>;
     async fn list_projects(&self) -> crate::Result<Vec<ProjectConfig>>;
 }
 
 #[async_trait::async_trait]
-impl<R: tauri::Runtime, T: Manager<R> + Send + Sync> ProjectsExt<R> for T {
+impl<T: Manager<tauri::Wry> + Send + Sync> ProjectsExt for T {
     async fn projects_directory(&self) -> PathBuf {
         self.app_state().await.project_path
     }
 
-    async fn create_project(&self, config: ProjectConfig) -> crate::Result<Project<R>> {
+    async fn create_project(&self, config: ProjectConfig) -> crate::Result<Project> {
         let target = self.projects_directory().await.join(config.id.clone());
         if target.exists() {
             return Err(crate::ProjectError::exists(config.id));
@@ -157,13 +157,13 @@ impl<R: tauri::Runtime, T: Manager<R> + Send + Sync> ProjectsExt<R> for T {
             .await
             .or_else(|e| Err(crate::Error::from(e)))?;
 
-        Ok(Project::<R> {
+        Ok(Project {
             context: ctx,
             config: config.clone(),
             handle: self.app_handle().clone(),
         })
     }
-    async fn existing_project(&self, config: ProjectConfig) -> crate::Result<Project<R>> {
+    async fn existing_project(&self, config: ProjectConfig) -> crate::Result<Project> {
         let target = self.projects_directory().await.join(config.id.clone());
         if !target.exists() {
             return Err(crate::ProjectError::not_exists(config.id));
@@ -197,7 +197,7 @@ impl<R: tauri::Runtime, T: Manager<R> + Send + Sync> ProjectsExt<R> for T {
             .await
             .or_else(|e| Err(crate::Error::from(e)))?;
 
-        Ok(Project::<R> {
+        Ok(Project {
             context: ctx,
             config: deserialized,
             handle: self.app_handle().clone(),
